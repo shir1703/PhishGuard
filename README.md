@@ -67,7 +67,7 @@ phishguard/
 
 ## 🧠 Notes
 
-- Model score thresholds were chosen based on experimentation.
+- Model score thresholds were chosen based on experimentation
 - Input text is sent from frontend → Node → Python (BERT) → Node → frontend.
 - This system is designed to simulate real-time phishing detection, not for production usage.
 
