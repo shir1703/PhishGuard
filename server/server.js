@@ -5,7 +5,7 @@ const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fet
 
 const app = express();
 const PORT = 3000;
-const MONGO_URI = "mongodb://localhost:27017/phishguard"; // שם הדאטהבייס שלך
+const MONGO_URI = "mongodb://localhost:27017/phishguard"; // DB name
 
 app.use(cors());
 app.use(express.json());

@@ -6,7 +6,7 @@ classifier = pipeline("text-classification", model="mrm8488/bert-tiny-finetuned-
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
-    print("📥 בקשת POST התקבלה!")  # נבדוק שזה רץ
+    print("📥 בקשת POST התקבלה!")
     data = request.get_json()
     text = data.get("text", "")
     if not text:
@@ -19,5 +19,5 @@ def analyze():
     })
 
 if __name__ == "__main__":
-    print("🚀 Flask server starting...")  # נבדוק שזה מגיע לכאן
+    print("🚀 Flask server starting...")
     app.run(port=5000)
