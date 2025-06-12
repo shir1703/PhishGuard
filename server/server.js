@@ -1,11 +1,14 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const path = require("path"); // הוספתי כדי להשתמש בנתיב
+
+// במקום require("node-fetch") הוספתי את זה:
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 const app = express();
 const PORT = 3000;
-const MONGO_URI = "mongodb://localhost:27017/phishguard"; // DB name
+const MONGO_URI = "mongodb://mongo:27017/phishguard"; // שם השירות 'mongo' מתוך docker-compose
 
 app.use(cors());
 app.use(express.json());
@@ -32,7 +35,8 @@ const ScanResult = mongoose.model("ScanResult", ScanResultSchema);
 
 // פנייה לשירות Flask (BERT)
 async function analyzeWithBERT(text) {
-  const response = await fetch("http://localhost:5000/analyze", {
+  // שים לב לשימוש בשם הקונטיינר של Flask!
+  const response = await fetch("http://flask:5000/analyze", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ text }),
@@ -63,9 +67,7 @@ app.post("/api/scan", async (req, res) => {
     let label;
 
     if (rawLabel === "LABEL_1") {
-      label = score > 0.8
-        ? "🚨 Phishing detected"
-        : "⚠️ Suspicious";
+      label = score > 0.8 ? "🚨 Phishing detected" : "⚠️ Suspicious";
     } else {
       label = "✅ Safe";
     }
@@ -91,7 +93,10 @@ app.post("/api/scan", async (req, res) => {
   }
 });
 
-// הרצת השרת
-app.listen(PORT, () => {
+// ⭐️ הוספתי שורה כדי לשרת את ה־HTML מתוך תיקיית 'client'
+app.use(express.static(path.join(__dirname, "client")));
+
+// הרצת השרת – עם '0.0.0.0' כדי שיאזין על כל הממשקים (ולא רק localhost)
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`✅ Node.js server running at http://localhost:${PORT}`);
 });
