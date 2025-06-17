@@ -59,10 +59,16 @@ app.post("/api/scan", async (req, res) => {
     const bertResult = await analyzeWithBERT(text);
     console.log("✅ Got BERT response:", bertResult);
 
-    const { score, label: rawLabel } = bertResult;
-    let label = "✅ Safe";
-    if (rawLabel === "LABEL_1") {
+    let { score, label: rawLabel } = bertResult;
+    if (typeof score === "string") {
+      score = parseFloat(score);
+    }
+
+    let label;
+    if (rawLabel.toLowerCase() === "phishing") {
       label = score > 0.8 ? "🚨 Phishing detected" : "⚠️ Suspicious";
+    } else {
+      label = "✅ Safe";
     }
 
     const resultToSave = new ScanResult({
@@ -82,13 +88,11 @@ app.post("/api/scan", async (req, res) => {
   }
 });
 
+// הגשת קבצי UI (client)
+app.use(express.static(path.join(__dirname, "client")));
 
-// ✅ הגשה של קבצי client מהתיקייה הנכונה
-app.use(express.static(path.join(__dirname, "../client")));
-
-// ✅ הגשה של index.html כברירת מחדל
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/index.html"));
+  res.sendFile(path.join(__dirname, "client/index.html"));
 });
 
 app.listen(PORT, "0.0.0.0", () => {

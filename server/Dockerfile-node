@@ -2,11 +2,7 @@ FROM node:20
 
 WORKDIR /app
 
-# העתקת כל תיקיית server (כולל server.js, package.json וכו')
 COPY . .
-
-# העתקת client (נמצאת מחוץ ל-server)
-COPY ./client ./client
 
 RUN npm install
 
