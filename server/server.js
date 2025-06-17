@@ -1,14 +1,14 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const path = require("path"); // הוספתי כדי להשתמש בנתיב
+const path = require("path");
 
-// במקום require("node-fetch") הוספתי את זה:
-const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 const app = express();
 const PORT = 3000;
-const MONGO_URI = "mongodb://mongo:27017/phishguard"; // שם השירות 'mongo' מתוך docker-compose
+const MONGO_URI = "mongodb://mongo:27017/phishguard";
 
 app.use(cors());
 app.use(express.json());
@@ -22,7 +22,7 @@ const db = mongoose.connection;
 db.on("error", (err) => console.error("❌ MongoDB connection error:", err));
 db.once("open", () => console.log("✅ Connected to MongoDB"));
 
-// סכימת ההודעות
+// סכימת הודעות
 const ScanResultSchema = new mongoose.Schema({
   text: String,
   label: String,
@@ -30,12 +30,10 @@ const ScanResultSchema = new mongoose.Schema({
   model: String,
   timestamp: { type: Date, default: Date.now },
 });
-
 const ScanResult = mongoose.model("ScanResult", ScanResultSchema);
 
-// פנייה לשירות Flask (BERT)
+// פנייה ל־Flask
 async function analyzeWithBERT(text) {
-  // שים לב לשימוש בשם הקונטיינר של Flask!
   const response = await fetch("http://flask:5000/analyze", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -46,10 +44,10 @@ async function analyzeWithBERT(text) {
     throw new Error(`BERT server responded with status ${response.status}`);
   }
 
-  return await response.json(); // { label: 'LABEL_1', score: 0.85 }
+  return await response.json();
 }
 
-// נקודת קצה לקבלת טקסט
+// נקודת קצה לניתוח
 app.post("/api/scan", async (req, res) => {
   const { text } = req.body;
 
@@ -61,15 +59,10 @@ app.post("/api/scan", async (req, res) => {
     const bertResult = await analyzeWithBERT(text);
     console.log("✅ Got BERT response:", bertResult);
 
-    const score = bertResult.score;
-    const rawLabel = bertResult.label;
-
-    let label;
-
+    const { score, label: rawLabel } = bertResult;
+    let label = "✅ Safe";
     if (rawLabel === "LABEL_1") {
       label = score > 0.8 ? "🚨 Phishing detected" : "⚠️ Suspicious";
-    } else {
-      label = "✅ Safe";
     }
 
     const resultToSave = new ScanResult({
@@ -82,21 +75,22 @@ app.post("/api/scan", async (req, res) => {
     await resultToSave.save();
     console.log("💾 Saved result to MongoDB");
 
-    res.json({
-      label,
-      score,
-      model: rawLabel,
-    });
+    res.json({ label, score, model: rawLabel });
   } catch (err) {
     console.error("❌ Error calling BERT service:", err);
     res.status(500).json({ result: "❌ Internal server error." });
   }
 });
 
-// ⭐️ הוספתי שורה כדי לשרת את ה־HTML מתוך תיקיית 'client'
-app.use(express.static(path.join(__dirname, "client")));
 
-// הרצת השרת – עם '0.0.0.0' כדי שיאזין על כל הממשקים (ולא רק localhost)
+// ✅ הגשה של קבצי client מהתיקייה הנכונה
+app.use(express.static(path.join(__dirname, "../client")));
+
+// ✅ הגשה של index.html כברירת מחדל
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/index.html"));
+});
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`✅ Node.js server running at http://localhost:${PORT}`);
 });

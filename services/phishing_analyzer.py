@@ -2,7 +2,10 @@ from flask import Flask, request, jsonify
 from transformers import pipeline
 
 app = Flask(__name__)
-classifier = pipeline("text-classification", model="mrm8488/bert-tiny-finetuned-sms-spam-detection")
+
+print("🚀 טוען את המודל...")
+classifier = pipeline("text-classification", model="ealvaradob/bert-finetuned-phishing")
+print("✅ המודל נטען בהצלחה!")
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
@@ -13,6 +16,7 @@ def analyze():
         return jsonify({"error": "No text provided"}), 400
 
     result = classifier(text)[0]
+    print(f"🔍 ניתוח הטקסט: {result}")
     return jsonify({
         "label": result["label"],
         "score": result["score"]

@@ -15,10 +15,12 @@ services:
       dockerfile: Dockerfile-flask
     ports:
       - "5000:5000"
-  
+    volumes:
+      - huggingface_cache:/root/.cache/huggingface  # Shared cache for model persistence
+
   node:
     build:
-      context: ./server       # פה שמים את התיקייה שבה נמצא Dockerfile-node
+      context: ./server
       dockerfile: Dockerfile-node
     ports:
       - "3000:3000"
@@ -30,3 +32,4 @@ services:
 
 volumes:
   mongodata:
+  huggingface_cache:
