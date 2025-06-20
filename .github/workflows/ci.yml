@@ -1,35 +1,26 @@
-# .github/workflows/ci.yml
+name: CI with Docker
 
-name: Run Flask Unit Tests
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push, pull_request]
 
 jobs:
-  flask-tests:
+  test-flask:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout repository
+      - name: 🧾 Checkout repository
         uses: actions/checkout@v3
 
-      - name: 🐍 Set up Python 3.10
+      - name: 🐍 Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
-      - name: 📦 Manually install Python dependencies
+      - name: 🐳 Build and run Docker containers
         run: |
-          cd services
-          pip install flask==3.1.1
-          pip install transformers==4.52.4
-          pip install torch==2.1.2
-          pip install pytest
+          docker-compose up -d --build
+          echo "⌛ Waiting for Flask to be ready..."
+          sleep 30  # אפשר לשפר ל-healthcheck בעתיד
 
-      - name: 🧪 Run Flask tests
+      - name: 🧪 Run unit tests inside Flask container
         run: |
-          cd services
-          pytest test_phishing_analyzer.py -v
+          docker exec phishguard-flask-1 pytest test_phishing_analyzer.py
