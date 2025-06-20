@@ -1,0 +1,33 @@
+# .github/workflows/ci.yml
+
+name: Run Flask Unit Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  flask-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🐍 Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: 📦 Install Python dependencies
+        run: |
+          cd services
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: 🧪 Run Flask tests
+        run: |
+          cd services
+          pytest test_phishing_analyzer.py -v
