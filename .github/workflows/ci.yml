@@ -21,10 +21,12 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: 📦 Install Python dependencies
+      - name: 📦 Manually install Python dependencies
         run: |
           cd services
-          pip install -r requirements.txt
+          pip install flask==3.1.1
+          pip install transformers==4.52.4
+          pip install torch==2.1.2
           pip install pytest
 
       - name: 🧪 Run Flask tests
