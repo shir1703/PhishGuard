@@ -30,3 +30,22 @@ def test_empty_text():
     data = response.get_json()
     assert response.status_code == 400
     assert "error" in data
+
+def test_large_text():
+    large_text = "This is a safe message. " * 1000
+    response = client.post("/analyze", data=json.dumps({"text": large_text}), content_type="application/json")
+    data = response.get_json()
+    assert response.status_code == 200
+    assert "label" in data
+
+def test_special_characters():
+    response = client.post("/analyze", data=json.dumps({"text": "<script>alert('XSS');</script>"}), content_type="application/json")
+    data = response.get_json()
+    assert response.status_code == 200
+    assert "label" in data
+
+def test_non_english_text():
+    response = client.post("/analyze", data=json.dumps({"text": "שלום, איך אתה מרגיש היום?"}), content_type="application/json")
+    data = response.get_json()
+    assert response.status_code == 200
+    assert "label" in data
