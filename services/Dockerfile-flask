@@ -5,8 +5,11 @@ WORKDIR /app
 COPY requirements.txt .
 
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
+    pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt && \
+    pip install pytest  # ✅ נוספה התקנת pytest
 
 COPY phishing_analyzer.py .
+COPY test_phishing_analyzer.py .  # ✅ נוודא שגם קובץ הבדיקות נכנס
 
 CMD ["python", "phishing_analyzer.py"]
+
