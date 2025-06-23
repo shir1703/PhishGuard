@@ -1,0 +1,15 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt && \
+    pip install pytest  # ✅
+
+COPY phishing_analyzer.py .
+COPY test_phishing_analyzer.py .
+
+CMD ["python", "phishing_analyzer.py"]
+

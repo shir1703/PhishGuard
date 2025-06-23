@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+
+  flask:
+    build:
+      context: ./services
+      dockerfile: Dockerfile-flask
+    ports:
+      - "5000:5000"
+    volumes:
+      - huggingface_cache:/root/.cache/huggingface  # Shared cache for model persistence
+
+  node:
+    build:
+      context: ./server
+      dockerfile: Dockerfile-node
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+      - flask
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/phishguard
+
+volumes:
+  mongodata:
+  huggingface_cache:

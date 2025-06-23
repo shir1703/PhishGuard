@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PhishGuard – Protect Yourself from Phishing</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1>PhishGuard 🛡️</h1>
+      <p>A real-time detection system for suspicious links or messages</p>
+    </header>
+
+    <main>
+      <section id="scan">
+        <h2>Paste suspicious content below</h2>
+        <form id="scan-form">
+          <label for="phishText">Paste any suspicious text or link:</label><br />
+          <textarea id="phishText" name="phishText" rows="6" cols="60" placeholder="Paste suspicious content here..."></textarea><br />
+          <button type="submit">Scan</button>
+        </form>
+        <div id="result">
+          <!-- Scan result will be displayed here -->
+        </div>
+      </section>
+
+      <section id="about">
+        <h2>About This Project</h2>
+        <p>
+          PhishGuard is a tool for detecting phishing attempts by analyzing suspicious text or links.
+          This project demonstrates the combination of cybersecurity concepts with modern web development.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <p>© 2025 PhishGuard. Created by Shir Levi.</p>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>

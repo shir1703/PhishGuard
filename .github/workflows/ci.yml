@@ -1,0 +1,21 @@
+name: CI with Docker
+
+on: [push, pull_request]
+
+jobs:
+  test-flask:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧾 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🐳 Build and run Docker containers
+        run: |
+          docker compose up -d --build
+          echo "⌛ Waiting for Flask to be ready..."
+          sleep 30
+
+      - name: 🧪 Run unit tests inside Flask container
+        run: |
+          docker exec phishguard-flask-1 pytest test_phishing_analyzer.py
