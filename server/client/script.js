@@ -4,6 +4,13 @@ document.getElementById("scan-form").addEventListener("submit", async function (
   const text = document.getElementById("phishText").value;
   const resultDiv = document.getElementById("result");
 
+  // פונקציה שמבצעת escape לתווים מסוכנים ב־HTML
+  function escapeHTML(str) {
+    const div = document.createElement("div");
+    div.innerText = str;
+    return div.innerHTML;
+  }
+
   try {
     const response = await fetch("/api/scan", {
       method: "POST",
@@ -16,8 +23,8 @@ document.getElementById("scan-form").addEventListener("submit", async function (
 
       resultDiv.innerHTML = `
         <div style="padding: 20px; font-size: 18px;">
-          <p><strong>🧠 AI Verdict:</strong> ${data.label}</p>
-          <p><strong>🧪 Confidence:</strong> ${(data.score * 100).toFixed(2)}%</p>
+          <p><strong>🧠 AI Verdict:</strong> ${escapeHTML(data.label)}</p>
+          <p><strong>🧪 Confidence:</strong> ${escapeHTML((data.score * 100).toFixed(2) + "%")}</p>
         </div>
       `;
     } else {
